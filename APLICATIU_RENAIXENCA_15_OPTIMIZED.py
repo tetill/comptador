@@ -35,10 +35,17 @@ except ImportError:
 
 try:
     import vlc
-    VLC_AVAILABLE = True
-except ImportError:
+    # Test if VLC can actually be initialized with quiet options
+    test_instance = vlc.Instance('--intf', 'dummy', '--no-video', '--quiet', '--no-osd')
+    if test_instance:
+        VLC_AVAILABLE = True
+        print("VLC disponible i funcional")
+    else:
+        VLC_AVAILABLE = False
+        print("VLC importat però no funcional")
+except Exception as e:
     VLC_AVAILABLE = False
-    print("VLC no disponible. Funcions avançades d'àudio no funcionaran.")
+    print(f"VLC no disponible: {e}")
 
 
 class PrecisionTimer:
@@ -348,23 +355,35 @@ class AudioPlayer:
         self._initialize_audio_backend()
     
     def _initialize_audio_backend(self) -> None:
-        """Inicialitza el backend d'àudio."""
+        """Inicialitza el backend d'àudio amb fallback robust."""
+        # Primer prova VLC si està disponible
         if self.use_vlc and VLC_AVAILABLE:
             try:
-                self.vlc_instance = vlc.Instance()
+                # Usa les mateixes opcions silencioses que en la detecció inicial
+                self.vlc_instance = vlc.Instance('--intf', 'dummy', '--no-video', '--quiet', '--no-osd', '--no-stats')
                 self.vlc_player = self.vlc_instance.media_player_new()
                 self.vlc_player.audio_set_volume(70)
                 print("VLC inicialitzat correctament")
             except Exception as e:
                 print(f"Error inicialitzant VLC: {e}")
                 self.use_vlc = False
+                self.vlc_instance = None
+                self.vlc_player = None
         
-        if PYGAME_AVAILABLE and not self.use_vlc:
+        # Si VLC falla o no està disponible, usa Pygame
+        if not self.use_vlc and PYGAME_AVAILABLE:
             try:
+                pygame.mixer.pre_init(frequency=22050, size=-16, channels=2, buffer=512)
                 pygame.mixer.init()
-                print("Pygame inicialitzat correctament")
+                print("Pygame inicialitzat correctament com a fallback")
             except Exception as e:
                 print(f"Error inicialitzant pygame: {e}")
+        
+        # Informa sobre l'estat final
+        if not self.use_vlc and not PYGAME_AVAILABLE:
+            print("ADVERTÈNCIA: Cap reproductor d'àudio disponible!")
+        elif not self.use_vlc:
+            print("Usant Pygame per reproducció d'àudio (funcionalitat limitada)")
     
     def load_file(self, file_path: str) -> bool:
         """Carrega un fitxer d'àudio."""
@@ -480,18 +499,18 @@ class AudioPlayer:
             return True
         return False
     
-    def get_current_time(self) -> int:
-        """Obté el temps actual de reproducció."""
+    def get_current_time(self) -> float:
+        """Obté el temps actual de reproducció amb precisió de mil·lisegons."""
         if self.use_vlc and self.vlc_player:
-            return int(self.vlc_player.get_time() / 1000)
+            return self.vlc_player.get_time() / 1000.0
         
         if not self.is_playing and not self.is_paused:
-            return 0
+            return 0.0
         if self.is_paused:
-            return int(self.pause_time)
+            return self.pause_time
         elif self.start_time:
-            return int(time.time() - self.start_time)
-        return 0
+            return time.time() - self.start_time
+        return 0.0
     
     def set_volume(self, volume: float) -> bool:
         """Estableix el volum."""
@@ -948,7 +967,7 @@ class TimerApp:
         progress_frame.columnconfigure(1, weight=1)
 
         self.audio_time_var = tk.StringVar(value="00:00 / --:--")
-        ttk.Label(progress_frame, textvariable=self.audio_time_var, font=('Courier New', 10)).grid(row=0, column=0, sticky=tk.W)
+        ttk.Label(progress_frame, textvariable=self.audio_time_var, font=('Courier New', 12, 'bold')).grid(row=0, column=0, sticky=tk.W)
 
         self.audio_progress_var = tk.DoubleVar()
         self.audio_progress_bar = ttk.Progressbar(progress_frame, variable=self.audio_progress_var, maximum=100)
@@ -1439,13 +1458,16 @@ class TimerApp:
             messagebox.showerror("Error", "Cap reproductor d'àudio disponible.")
             return
             
+        # Si no hi ha fitxer carregat, carrega el seleccionat
         if not self.audio_player.current_file:
             selection = self.audio_listbox.curselection()
             if not selection:
                 messagebox.showwarning("Avís", "Selecciona un fitxer per reproduir.")
                 return
             file_path = self.audio_player.files[selection[0]]
-            self.audio_player.load_file(file_path)
+            if not self.audio_player.load_file(file_path):
+                messagebox.showerror("Error", "No s'ha pogut carregar el fitxer.")
+                return
             file_name = os.path.basename(file_path)
             if len(file_name) > 25:
                 file_name = file_name[:22] + "..."
@@ -1504,39 +1526,50 @@ class TimerApp:
         elif PYGAME_AVAILABLE:
             self._update_pygame_display()
         
-        self.root.after(1000, self.update_audio_display)
+        self.root.after(250, self.update_audio_display)
     
     def _update_vlc_display(self) -> None:
         """Actualitza display amb VLC."""
         status = self.audio_player.get_status()
         current_time = self.audio_player.get_current_time()
         
-        if status == "playing":
-            minutes = current_time // 60
-            seconds = current_time % 60
+        if status == "playing" or status == "paused":
+            minutes = int(current_time // 60)
+            seconds = int(current_time % 60)
             
             try:
                 duration_ms = self.audio_player.vlc_player.get_length()
                 if duration_ms > 0:
-                    duration = int(duration_ms / 1000)
-                    duration_min = duration // 60
-                    duration_sec = duration % 60
-                    self.audio_time_var.set(f"{minutes:02d}:{seconds:02d} / {duration_min:02d}:{duration_sec:02d}")
+                    duration = duration_ms / 1000.0
+                    duration_min = int(duration // 60)
+                    duration_sec = int(duration % 60)
                     
-                    progress = (current_time / duration) * 100 if duration > 0 else 0
+                    # Mostrar temps restant en lloc d'elapsed
+                    remaining_time = duration - current_time
+                    remaining_min = int(remaining_time // 60)
+                    remaining_sec = int(remaining_time % 60)
+                    
+                    if status == "playing":
+                        self.audio_time_var.set(f"-{remaining_min:02d}:{remaining_sec:02d} / {duration_min:02d}:{duration_sec:02d}")
+                    else:  # paused
+                        self.audio_time_var.set(f"-{remaining_min:02d}:{remaining_sec:02d} [PAUSA]")
+                    
+                    # Càlcul més precís del progrés (mantenim la precisió interna)
+                    progress = min((current_time / duration) * 100, 100) if duration > 0 else 0
                     self.audio_progress_var.set(progress)
                 else:
-                    self.audio_time_var.set(f"{minutes:02d}:{seconds:02d} / --:--")
+                    if status == "playing":
+                        self.audio_time_var.set(f"{minutes:02d}:{seconds:02d} / --:--")
+                    else:
+                        self.audio_time_var.set(f"{minutes:02d}:{seconds:02d} [PAUSA]")
                     self.audio_progress_var.set(0)
-            except:
-                self.audio_time_var.set(f"{minutes:02d}:{seconds:02d} / --:--")
+            except Exception as e:
+                if status == "playing":
+                    self.audio_time_var.set(f"{minutes:02d}:{seconds:02d} / --:--")
+                else:
+                    self.audio_time_var.set(f"{minutes:02d}:{seconds:02d} [PAUSA]")
                 self.audio_progress_var.set(0)
                 
-        elif status == "paused":
-            minutes = current_time // 60
-            seconds = current_time % 60
-            self.audio_time_var.set(f"{minutes:02d}:{seconds:02d} [PAUSA]")
-            
         elif status == "stopped":
             self.audio_time_var.set("00:00 / --:--")
             self.audio_progress_var.set(0)
