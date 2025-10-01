@@ -866,8 +866,6 @@ class TimerApp:
         self._setup_presidents_section(presidents_audio_frame)
         self._setup_audio_section(presidents_audio_frame)
         
-        # Força l'equalització després de crear tots els widgets
-        self.force_equal_columns()
     
     def _setup_presidents_section(self, parent) -> None:
         """Configura la secció de presidents."""
@@ -989,7 +987,7 @@ class TimerApp:
         listbox_frame.columnconfigure(0, weight=1)
         listbox_frame.rowconfigure(0, weight=1)
 
-        self.audio_listbox = tk.Listbox(listbox_frame, font=('Arial', 9), height=12)  # Alçada mínima de 12 línies
+        self.audio_listbox = tk.Listbox(listbox_frame, font=('Arial', 9))
         self.audio_listbox.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 
         audio_list_scrollbar = ttk.Scrollbar(listbox_frame, orient=tk.VERTICAL, command=self.audio_listbox.yview)
@@ -1008,25 +1006,6 @@ class TimerApp:
         # Variable per mantenir el nom del fitxer actual (sense mostrar-lo)
         self.current_audio_var = tk.StringVar(value="Cap fitxer seleccionat")
 
-    def force_equal_columns(self) -> None:
-        """Força que les columnes presidents/audio siguin iguals."""
-        # Programa la redistribució després que tots els widgets estiguin creats
-        self.root.after_idle(self._equalize_columns)
-
-    def _equalize_columns(self) -> None:
-        """Equalitza les columnes després del renderitzat inicial."""
-        # Força l'actualització del layout
-        self.root.update_idletasks()
-        
-        # Troba el frame de presidents i audio
-        for child in self.root.winfo_children():
-            if isinstance(child, ttk.Frame):  # main_frame
-                for grandchild in child.winfo_children():
-                    if hasattr(grandchild, 'grid_info') and grandchild.grid_info().get('row') == 4:
-                        # Aquest és el presidents_audio_frame
-                        grandchild.columnconfigure(0, weight=1, minsize=500, uniform="group1")
-                        grandchild.columnconfigure(1, weight=1, minsize=500, uniform="group1")
-                        break
     
     def _enable_audio_drag_drop(self) -> None:
         """Habilita drag and drop per àudio."""
