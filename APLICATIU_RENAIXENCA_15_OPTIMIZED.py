@@ -692,17 +692,28 @@ class TimerApp:
         audio_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 0))
         audio_frame.columnconfigure(0, weight=1, uniform="audio_cols") # Left part
         audio_frame.columnconfigure(1, weight=1, uniform="audio_cols") # Right part
-        audio_frame.rowconfigure(0, weight=1)
+        audio_frame.rowconfigure(0, weight=0) # For volume bar
+        audio_frame.rowconfigure(1, weight=1) # For left/right parts
+
+        # Volume control (moved to top)
+        volume_frame = ttk.Frame(audio_frame, padding="5")
+        volume_frame.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 5))
+        volume_frame.columnconfigure(1, weight=1)
+        ttk.Label(volume_frame, text="Volum:", font=('Arial', 10)).grid(row=0, column=0, padx=(0, 5), sticky=tk.W)
+        self.volume_var = tk.DoubleVar(value=70)
+        volume_scale = ttk.Scale(volume_frame, from_=0, to=100, variable=self.volume_var, 
+                               orient=tk.HORIZONTAL, command=self.change_volume)
+        volume_scale.grid(row=0, column=1, sticky=(tk.W, tk.E))
 
         # Left part: Buttons, Counter, Progress Bar
         left_audio_controls_frame = ttk.Frame(audio_frame, padding="5")
-        left_audio_controls_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 5))
+        left_audio_controls_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 5))
         left_audio_controls_frame.columnconfigure(0, weight=1)
         left_audio_controls_frame.rowconfigure(0, weight=1) # For buttons
         left_audio_controls_frame.rowconfigure(1, weight=1) # For counter
         left_audio_controls_frame.rowconfigure(2, weight=0) # For progress bar
 
-        # Buttons (bigger)
+        # Buttons (bigger, icons only)
         buttons_frame = ttk.Frame(left_audio_controls_frame)
         buttons_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.S), pady=(0, 10))
         buttons_frame.columnconfigure(0, weight=1)
@@ -713,13 +724,13 @@ class TimerApp:
         style = ttk.Style()
         style.configure("Big.TButton", font=('Arial', 18, 'bold'))
 
-        load_btn = ttk.Button(buttons_frame, text="📁 Carregar", command=self.load_audio_files, style="Big.TButton")
+        load_btn = ttk.Button(buttons_frame, text="📁", command=self.load_audio_files, style="Big.TButton")
         load_btn.grid(row=0, column=0, padx=5, pady=5, sticky=(tk.W, tk.E))
 
-        self.play_pause_btn = ttk.Button(buttons_frame, text="▶️ Play", command=self.toggle_play_pause, style="Big.TButton")
+        self.play_pause_btn = ttk.Button(buttons_frame, text="▶️", command=self.toggle_play_pause, style="Big.TButton")
         self.play_pause_btn.grid(row=0, column=1, padx=5, pady=5, sticky=(tk.W, tk.E))
 
-        stop_btn = ttk.Button(buttons_frame, text="⏹️ Stop", command=self.stop_audio, style="Big.TButton")
+        stop_btn = ttk.Button(buttons_frame, text="⏹️", command=self.stop_audio, style="Big.TButton")
         stop_btn.grid(row=0, column=2, padx=5, pady=5, sticky=(tk.W, tk.E))
 
         # Counter (much bigger)
@@ -732,20 +743,10 @@ class TimerApp:
         self.audio_progress_bar = ttk.Progressbar(left_audio_controls_frame, variable=self.audio_progress_var, maximum=100)
         self.audio_progress_bar.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=(0, 5))
         self.audio_progress_bar.bind("<Button-1>", self.on_progress_click)
-
-        # Volume control (kept, but not explicitly requested to be bigger)
-        volume_frame = ttk.Frame(left_audio_controls_frame)
-        volume_frame.grid(row=3, column=0, sticky=(tk.W, tk.E), pady=(5,0))
-        volume_frame.columnconfigure(1, weight=1)
-        ttk.Label(volume_frame, text="Volum:", font=('Arial', 10)).grid(row=0, column=0, padx=(0, 5), sticky=tk.W)
-        self.volume_var = tk.DoubleVar(value=70)
-        volume_scale = ttk.Scale(volume_frame, from_=0, to=100, variable=self.volume_var, 
-                               orient=tk.HORIZONTAL, command=self.change_volume)
-        volume_scale.grid(row=0, column=1, sticky=(tk.W, tk.E))
         
         # Right part: Audio Files List
         right_audio_files_frame = ttk.Frame(audio_frame, padding="5")
-        right_audio_files_frame.grid(row=0, column=1, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(5, 0))
+        right_audio_files_frame.grid(row=1, column=1, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(5, 0))
         right_audio_files_frame.columnconfigure(0, weight=1)
         right_audio_files_frame.rowconfigure(0, weight=1)
 
