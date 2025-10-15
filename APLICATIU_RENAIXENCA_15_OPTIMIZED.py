@@ -155,184 +155,6 @@ class PrecisionTimer:
         return f"{int(seconds) // 60:02d}:{int(seconds) % 60:02d}"
 
 
-class PresidentsGame:
-    """Joc dels presidents de la Generalitat."""
-    
-    def __init__(self):
-        self.presidents = [
-            "133. Salvador Illa Roca (2024-)",
-            "132. Pere Aragonès Garcia (2021-2024)",
-            "131. Joaquim Torra Pla (2018-2020)",
-            "130. Carles Puigdemont Casamajó (2016-2017)",
-            "129. Artur Mas Gavarró (2010-2016)",
-            "128. José Montilla Aguilera (2006-2010)",
-            "127. Pasqual Maragall Mira (2003-2006)",
-            "126. Jordi Pujol Soley (1980-2003)",
-            "125. Josep Tarradellas Joan (1954-1980)",
-            "124. Josep Irla Bosch (1940-1954)",
-            "123. Lluís Companys Jover (1933-1940)",
-            "122. Francesc Macià Llussà (1932-1933)",
-            "121. Josep de Vilamala (1713-1714)",
-            "120. Francesc Antoni de Solanell (1710-1713)",
-            "119. Manuel de Copons D'Esquerrer (1707-1710)",
-            "118. Josep Grau (1706-1707)",
-            "117. Francesc de Valls Freixa (1704-1705)",
-            "116. Antoni de Planella (1701-1704)",
-            "116. Josep Antoni Valls Pandutxo (1701)",
-            "115. Climent de Solanell de Foix (1698-1701)",
-            "114. Rafael de Pinyana Galvany (1695-1698)",
-            "113. Antoni de Planella de Cruïlles (1692-1695)",
-            "112. Benet Ignasi de Salazar (1689-1692)",
-            "111. Antoni de Saiol de Quarteroni (1686-1689)",
-            "110. Baltasar de Muntaner de Sacosta (1683-1686)",
-            "109. Josep Sastre Prats (1680-1683)",
-            "108. Alfonso de Sotomayor (1677-1680)",
-            "107. Esteve Mercadal Dou (1674-1677)",
-            "106. Josep de Camporrells de Sabater (1671-1674)",
-            "105. Joan Pagès Vallgornera (1668-1671)",
-            "104. Josep de Magarola de Grau (1665-1668)",
-            "103. Jaume de Copons de Tamarit (1662-1665)",
-            "102. Pau d'Àger d'Orcau (1659-1662)",
-            "101. Joan Jeroni Besora (1656-1659)",
-            "100. Francesc Pijoan (1654-1656)",
-            "99. Pau del Rosso (1650-1654)",
-            "98. Andreu Pont (1647-1650)",
-            "97. Gispert d'Amat i Desbosc de Sant Vicenç (1644-1647)",
-            "96. Bernat de Cardona i de Raset (1641-1644)",
-            "95. Josep Soler (1641)",
-            "94. Pau Claris Casademunt (1638-1641)",
-            "93. Miquel d'Alentorn i Salbà (1635-1638)",
-            "92. Garcia Gil de Manrique y Maldonado (1632-1635)",
-            "91. Esteve Salacruz (1632)",
-            "90. Pere Antoni Serra (1629-1632)",
-            "89. Francesc Morillo (1626-1629)",
-            "88. Pere de Magarola i Fontanet (1623-1626)",
-            "87. Benet Fontanella (1620-1623)",
-            "86. Lluís de Tena Gomez (1617-1620)",
-            "85. Miquel d'Aimeric i de Codina (1616-1617)",
-            "84. Ramon d'Olmera i d'Alemany (1614-1616)",
-            "83. Francesc de Sentjust i de Castre (1611-1614)",
-            "82. Onofre d'Alentorn i de Botella (1608-1611)",
-            "81. Pere Pau Caçador i d'Aguilar-Dusai (1605-1608)",
-            "80. Bernat de Cardona i de Queralt (1602-1605)",
-            "79. Jaume Cordelles i Oms (1599-1602)",
-            "78. Francesc Oliveres (1598-1599)",
-            "Francesc Oliver de Boteller (1596-1598)",
-            "77. Miquel d'Agullana (1593-1596)",
-            "76. Jaume Caçador Claret (1590-1593)",
-            "75. Francesc Oliver de Boteller (1587-1588)",
-            "74. Martí Joan de Calders (1587)",
-            "Pere Oliver Boteller de Riquer (1584-1587)",
-            "73. Jaume Beuló (1584)",
-            "72. Rafael d'Oms (1581-1584)",
-            "Benet de Tocco (1578-1581)",
-            "71. Pere Oliver Boteller de Riquer (1575-1578)",
-            "70. Jaume Cerveró (1572-1575)",
-            "69. Benet de Tocco (1569-1572)",
-            "68. Francesc Giginta (1566-1569)",
-            "67. Onofre Gomis (1563-1566)",
-            "Miquel d'Oms de Sentmenat (1560-1563)",
-            "66. Ferran de Loaces Peres (1559-1560)",
-            "65. Pere Àngel Ferrer Despuig (1557-1559)",
-            "64. Francesc Jeroni Benet Franc (1554-1557)",
-            "63. Miquel de Tormo (1553-1554)",
-            "62. Joan de Tormo (1552-1553)",
-            "61. Miquel de Ferrer de Marimon (1552)",
-            "60. Onofre de Copons de Vilafranca (1551-1552)",
-            "59. Miquel d'Oms de Sentmenat (1548-1551)",
-            "58. Jaume Caçador (1545-1548)",
-            "57. Miquel Puig (1542-1545)",
-            "56. Jeroni de Requesens Roís de Liori (1539-1542)",
-            "55. Joan Pasqual (1536-1539)",
-            "54. Dionís de Carcassona (1533-1536)",
-            "53. Francesc Oliver de Boteller (1530-1533)",
-            "52. Francesc de Solsona (1527-1530)",
-            "51. Lluís de Cardona Enríquez (1524-1527)",
-            "50. Joan Margarit de Requesens (1521-1524)",
-            "49. Bernat de Corbera (1518-1521)",
-            "48. Esteve de Garret (1515-1518)",
-            "47. Jaume Fiella (1514-1515)",
-            "46. Joan d'Aragó (1512-1514)",
-            "45. Jordi Sanç (1509-1512)",
-            "44. Lluís Desplà i d'Oms (1506-1509)",
-            "43. Gonzalo Fernández de Heredia (1504-1506)",
-            "42. Ferrer Nicolau de Gualbes i Desvalls (1503-1504)",
-            "41. Alfons d'Aragó (1500-1503)",
-            "40. Pedro de Mendoza (1497-1500)",
-            "39. Francí Vicenç (1494-1497)",
-            "38. Joan de Peralta (1491-1494)",
-            "37. Juan Payo Coello (1488-1491)",
-            "Ponç Andreu de Vilar (1485-1488)",
-            "36. Pere de Cardona (1482-1485)",
-            "35. Berenguer de Sos (1479-1482)",
-            "34. Pere Joan Llobera (1478-1479)",
-            "33. Miquel Delgado (1476-1478)",
-            "32. Joan Maurici de Ribes (1473-1476)",
-            "31. Miquel Samsó (1470-1473)",
-            "30. Ponç Andreu de Vilar (1467-1470)",
-            "29. Francesc Colom (1464-1467)",
-            "Bernat Saportella (1463-1472)",
-            "28. Manuel de Montsuar i Mateu (1461-1464)",
-            "27. Antoni Pere Ferrer (1458-1461)",
-            "26. Nicolau Pujades (1455-1458)",
-            "25. Bernat Guillem Samasó (1452-1455)",
-            "24. Bertran Samasó (1449-1452)",
-            "23. Pero Ximénez de Urrea i de Bardaixí (1446-1449)",
-            "22. Jaume de Cardona i de Gandía (1443-1446)",
-            "21. Antoni d'Avinyó i de Moles (1440-1443)",
-            "20. Pere de Darnius (1437-1440)",
-            "19. Pere de Palou (1434-1437)",
-            "Marc de Vilalba (1431-1434)",
-            "18. Domènec Ram i Lanaja (1428-1431)",
-            "17. Felip de Malla (1425-1428)",
-            "16. Dalmau de Cartellà i Despou (1422-1425)",
-            "15. Joan Desgarrigues (1419-1422)",
-            "14. Andreu Bertran (1416-1419)",
-            "13. Marc de Vilalba (1414-1416)",
-            "12. Alfons de Tous (1396-1413)",
-            "11. Miquel de Santjoan (1389-1396)",
-            "10. Arnau Descolomer (1384-1389)",
-            "9. Pere de Santamans (1381-1383)",
-            "8. Felip d'Anglesola (1380)",
-            "Ramon Gener (1379-1380)",
-            "7. Galceran de Besora i de Cartellà (1377-1378)",
-            "6. Guillem de Guimerà i d'Abella (1376-1377)",
-            "5. Joan I d'Empúries (1376)",
-            "Romeu Sescomes (1375-1376)",
-            "4. Bernat Vallès (1365-1367)",
-            "3. Ramon Gener (1364-1365)",
-            "2. Ramon Sescomes (1363-1364)",
-            "1. Berenguer de Cruïlles (1359-1362)"
-        ]
-        self.current_index: int = 0
-        self.completed: List[str] = []
-
-    def get_current_president(self) -> str:
-        """Obté el president actual."""
-        if self.current_index < len(self.presidents):
-            return self.presidents[self.current_index]
-        return "COMPLETAT!"
-
-    def mark_correct(self) -> bool:
-        """Marca el president actual com a correcte."""
-        if self.current_index < len(self.presidents):
-            self.completed.append(self.presidents[self.current_index])
-            self.current_index += 1
-            return True
-        return False
-
-    def reset_game(self) -> None:
-        """Reinicia el joc."""
-        self.current_index = 0
-        self.completed = []
-    
-    def get_progress(self) -> str:
-        """Obté el progrés actual."""
-        return f"{len(self.completed)}/{len(self.presidents)}"
-    
-    def is_completed(self) -> bool:
-        """Comprova si el joc està completat."""
-        return self.current_index >= len(self.presidents)
 
 
 class AudioPlayer:
@@ -598,14 +420,12 @@ class TimerApp:
         
         # Components principals
         self.timer = PrecisionTimer()
-        self.presidents_game = PresidentsGame()
         self.audio_player = AudioPlayer()
         
         # Inicialització
         self.ask_program_number()
         self.setup_ui()
         self._start_update_loops()
-        self.update_presidents_display()
         self.root.focus_set()
     
     def ask_program_number(self) -> None:
@@ -859,138 +679,80 @@ class TimerApp:
         presidents_audio_frame.grid(row=4, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(15, 0))
         
         # Configuració inicial
-        presidents_audio_frame.columnconfigure(0, weight=1, uniform="group1")
-        presidents_audio_frame.columnconfigure(1, weight=1, uniform="group1")
+        presidents_audio_frame.columnconfigure(0, weight=1) # Audio section will take full width
         presidents_audio_frame.rowconfigure(0, weight=1)
 
-        self._setup_presidents_section(presidents_audio_frame)
         self._setup_audio_section(presidents_audio_frame)
         
     
-    def _setup_presidents_section(self, parent) -> None:
-        """Configura la secció de presidents."""
-        presidents_frame = ttk.LabelFrame(parent, text="PRESIDENTS GENERALITAT", 
-                                        padding="15", style="Thick.TLabelframe")
-        presidents_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 7))
-        presidents_frame.columnconfigure(0, weight=1)
-        presidents_frame.rowconfigure(3, weight=1)
-
-        info_frame = ttk.Frame(presidents_frame)
-        info_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
-        info_frame.columnconfigure(1, weight=0)
-
-        ttk.Label(info_frame, text="Convidat:", font=('Arial', 10, 'bold')).grid(row=0, column=0, sticky=tk.W)
-        guest_entry = ttk.Entry(info_frame, textvariable=self.guest_name_var, width=15)
-        guest_entry.grid(row=0, column=1, sticky=tk.W, padx=(5, 5))
-
-        ttk.Label(info_frame, text="Ha de dir:", font=('Arial', 10, 'bold')).grid(row=0, column=2, sticky=tk.W)
-        self.presidents_progress_var = tk.StringVar(value="0/133")
-        ttk.Label(info_frame, textvariable=self.presidents_progress_var, 
-                 font=('Arial', 10, 'bold'), foreground='blue').grid(row=0, column=3, sticky=tk.E)
-
-        self.current_president_var = tk.StringVar()
-        self.current_president_label = ttk.Label(presidents_frame, 
-                                               textvariable=self.current_president_var,
-                                               font=('Arial', 10, 'normal'),
-                                               wraplength=300,
-                                               justify='center',
-                                               background='#f0f0f0',
-                                               relief='sunken',
-                                               padding="8")
-        self.current_president_label.grid(row=1, column=0, pady=8, sticky=(tk.W, tk.E))
-
-        presidents_buttons_frame = ttk.Frame(presidents_frame)
-        presidents_buttons_frame.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=(5, 8))
-        for i in range(3):
-            presidents_buttons_frame.columnconfigure(i, weight=1)
-
-        self.correct_btn = ttk.Button(presidents_buttons_frame, text="Correcte", 
-                                     command=self.mark_president_correct)
-        self.correct_btn.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=(0, 2))
-
-        ttk.Button(presidents_buttons_frame, text="Reiniciar", 
-                  command=self.reset_presidents_game).grid(row=0, column=1, sticky=(tk.W, tk.E), padx=(2, 2))
-
-        ttk.Button(presidents_buttons_frame, text="Registre", 
-                  command=self.export_presidents_record).grid(row=0, column=2, sticky=(tk.W, tk.E), padx=(2, 0))
-
-        completed_frame = ttk.Frame(presidents_frame)
-        completed_frame.grid(row=3, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(5, 0))
-        completed_frame.columnconfigure(0, weight=1)
-        completed_frame.rowconfigure(0, weight=1)
-
-        self.completed_text = tk.Text(completed_frame, height=10, font=('Arial', 9), 
-                                     wrap=tk.WORD, state='disabled', background='#f8f8f8')
-        self.completed_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-
-        completed_scroll = ttk.Scrollbar(completed_frame, orient=tk.VERTICAL, 
-                                       command=self.completed_text.yview)
-        completed_scroll.grid(row=0, column=1, sticky=(tk.N, tk.S))
-        self.completed_text.configure(yscrollcommand=completed_scroll.set)
-    
     def _setup_audio_section(self, parent) -> None:
-        """Configura la secció d'àudio."""
+        """Configura la secció d'àudio amb un disseny de dues columnes."""
         audio_frame = ttk.LabelFrame(parent, text="REPRODUCTOR D'ÀUDIO", 
                                    padding="8", style="Thick.TLabelframe")
-        audio_frame.grid(row=0, column=1, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(7, 0))
-        audio_frame.columnconfigure(0, weight=1)
-        audio_frame.rowconfigure(3, weight=3)
+        audio_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 0))
+        audio_frame.columnconfigure(0, weight=1, uniform="audio_cols") # Left part
+        audio_frame.columnconfigure(1, weight=1, uniform="audio_cols") # Right part
+        audio_frame.rowconfigure(0, weight=1)
 
-        # Controls audio amb icones
-        controls_audio_frame = ttk.Frame(audio_frame)
-        controls_audio_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 5))
+        # Left part: Buttons, Counter, Progress Bar
+        left_audio_controls_frame = ttk.Frame(audio_frame, padding="5")
+        left_audio_controls_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 5))
+        left_audio_controls_frame.columnconfigure(0, weight=1)
+        left_audio_controls_frame.rowconfigure(0, weight=1) # For buttons
+        left_audio_controls_frame.rowconfigure(1, weight=1) # For counter
+        left_audio_controls_frame.rowconfigure(2, weight=0) # For progress bar
 
-        # Botó carregar amb icona
-        load_btn = ttk.Button(controls_audio_frame, text="📁", width=3, command=self.load_audio_files)
-        load_btn.grid(row=0, column=0, padx=2)
+        # Buttons (bigger)
+        buttons_frame = ttk.Frame(left_audio_controls_frame)
+        buttons_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.S), pady=(0, 10))
+        buttons_frame.columnconfigure(0, weight=1)
+        buttons_frame.columnconfigure(1, weight=1)
+        buttons_frame.columnconfigure(2, weight=1)
 
-        # Botó play/pause amb icona
-        self.play_pause_btn = ttk.Button(controls_audio_frame, text="▶️", width=3, command=self.toggle_play_pause)
-        self.play_pause_btn.grid(row=0, column=1, padx=2)
+        # Define a style for the larger buttons
+        style = ttk.Style()
+        style.configure("Big.TButton", font=('Arial', 18, 'bold'))
 
-        # Botó stop amb icona
-        stop_btn = ttk.Button(controls_audio_frame, text="⏹️", width=3, command=self.stop_audio)
-        stop_btn.grid(row=0, column=2, padx=2)
+        load_btn = ttk.Button(buttons_frame, text="📁 Carregar", command=self.load_audio_files, style="Big.TButton")
+        load_btn.grid(row=0, column=0, padx=5, pady=5, sticky=(tk.W, tk.E))
 
-        # Volum simple
-        ttk.Label(controls_audio_frame, text="Vol:", font=('Arial', 9)).grid(row=0, column=3, padx=(15, 3))
-        self.volume_var = tk.DoubleVar(value=70)
-        volume_scale = ttk.Scale(controls_audio_frame, from_=0, to=100, variable=self.volume_var, 
-                               orient=tk.HORIZONTAL, length=150, command=self.change_volume)
-        volume_scale.grid(row=0, column=4)
+        self.play_pause_btn = ttk.Button(buttons_frame, text="▶️ Play", command=self.toggle_play_pause, style="Big.TButton")
+        self.play_pause_btn.grid(row=0, column=1, padx=5, pady=5, sticky=(tk.W, tk.E))
 
-        # Temps i barra de progrés (sense línia de fitxer)
-        progress_frame = ttk.Frame(audio_frame)
-        progress_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(0, 5))
-        progress_frame.columnconfigure(1, weight=1)
+        stop_btn = ttk.Button(buttons_frame, text="⏹️ Stop", command=self.stop_audio, style="Big.TButton")
+        stop_btn.grid(row=0, column=2, padx=5, pady=5, sticky=(tk.W, tk.E))
 
+        # Counter (much bigger)
         self.audio_time_var = tk.StringVar(value="00:00 / --:--")
-        ttk.Label(progress_frame, textvariable=self.audio_time_var, font=('Courier New', 12, 'bold')).grid(row=0, column=0, sticky=tk.W)
+        ttk.Label(left_audio_controls_frame, textvariable=self.audio_time_var, 
+                 font=('Courier New', 48, 'bold'), anchor='center').grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(10, 20))
 
+        # Progress bar (full width of left part)
         self.audio_progress_var = tk.DoubleVar()
-        self.audio_progress_bar = ttk.Progressbar(progress_frame, variable=self.audio_progress_var, maximum=100)
-        self.audio_progress_bar.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=(10, 0))
+        self.audio_progress_bar = ttk.Progressbar(left_audio_controls_frame, variable=self.audio_progress_var, maximum=100)
+        self.audio_progress_bar.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=(0, 5))
         self.audio_progress_bar.bind("<Button-1>", self.on_progress_click)
 
-        # Separador visual
-        ttk.Separator(audio_frame, orient='horizontal').grid(row=2, column=0, sticky=(tk.W, tk.E), pady=(5, 10))
+        # Volume control (kept, but not explicitly requested to be bigger)
+        volume_frame = ttk.Frame(left_audio_controls_frame)
+        volume_frame.grid(row=3, column=0, sticky=(tk.W, tk.E), pady=(5,0))
+        volume_frame.columnconfigure(1, weight=1)
+        ttk.Label(volume_frame, text="Volum:", font=('Arial', 10)).grid(row=0, column=0, padx=(0, 5), sticky=tk.W)
+        self.volume_var = tk.DoubleVar(value=70)
+        volume_scale = ttk.Scale(volume_frame, from_=0, to=100, variable=self.volume_var, 
+                               orient=tk.HORIZONTAL, command=self.change_volume)
+        volume_scale.grid(row=0, column=1, sticky=(tk.W, tk.E))
+        
+        # Right part: Audio Files List
+        right_audio_files_frame = ttk.Frame(audio_frame, padding="5")
+        right_audio_files_frame.grid(row=0, column=1, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(5, 0))
+        right_audio_files_frame.columnconfigure(0, weight=1)
+        right_audio_files_frame.rowconfigure(0, weight=1)
 
-        # Llista fitxers
-        files_frame = ttk.Frame(audio_frame)
-        files_frame.grid(row=3, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        files_frame.columnconfigure(0, weight=1)
-        files_frame.rowconfigure(0, weight=1)
-
-
-        listbox_frame = ttk.Frame(files_frame)
-        listbox_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        listbox_frame.columnconfigure(0, weight=1)
-        listbox_frame.rowconfigure(0, weight=1)
-
-        self.audio_listbox = tk.Listbox(listbox_frame, font=('Arial', 9))
+        self.audio_listbox = tk.Listbox(right_audio_files_frame, font=('Arial', 10))
         self.audio_listbox.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 
-        audio_list_scrollbar = ttk.Scrollbar(listbox_frame, orient=tk.VERTICAL, command=self.audio_listbox.yview)
+        audio_list_scrollbar = ttk.Scrollbar(right_audio_files_frame, orient=tk.VERTICAL, command=self.audio_listbox.yview)
         audio_list_scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
         self.audio_listbox.configure(yscrollcommand=audio_list_scrollbar.set)
 
@@ -1098,8 +860,6 @@ class TimerApp:
             self.manual_min_var.set("")
             self.manual_sec_var.set("")
             self.guest_name_var.set("")
-            self.presidents_game.reset_game()
-            self.update_presidents_display()
     
     def update_target(self) -> None:
         """Actualitza l'objectiu de temps."""
@@ -1127,8 +887,6 @@ class TimerApp:
             self.manual_min_var.set("")
             self.manual_sec_var.set("")
             self.guest_name_var.set("")
-            self.presidents_game.reset_game()
-            self.update_presidents_display()
     
     def open_counter_window(self) -> None:
         """Obre finestra de comptador extra."""
@@ -1781,105 +1539,6 @@ class TimerApp:
         text_frame.columnconfigure(0, weight=1)
         text_frame.rowconfigure(0, weight=1)
     
-    # MÈTODES FUNCIONALITAT PRESIDENTS
-    def mark_president_correct(self) -> None:
-        """Marca el president com a correcte."""
-        if self.presidents_game.mark_correct():
-            self.update_presidents_display()
-            if self.presidents_game.is_completed():
-                messagebox.showinfo("Felicitats!", f"Tots els {len(self.presidents_game.presidents)} presidents completats!")
-
-    def reset_presidents_game(self) -> None:
-        """Reinicia el joc de presidents."""
-        if messagebox.askyesno("Reiniciar Presidents", "Reiniciar el joc de presidents?"):
-            self.presidents_game.reset_game()
-            self.update_presidents_display()
-
-    def update_presidents_display(self) -> None:
-        """Actualitza el display de presidents."""
-        self.presidents_progress_var.set(self.presidents_game.get_progress())
-        current = self.presidents_game.get_current_president()
-        self.current_president_var.set(current)
-        
-        if self.presidents_game.is_completed():
-            self.current_president_label.configure(foreground='green')
-            self.correct_btn.configure(state='disabled', text="Completat")
-        else:
-            self.current_president_label.configure(foreground='black')
-            self.correct_btn.configure(state='normal', text="Correcte")
-        
-        self.completed_text.configure(state='normal')
-        self.completed_text.delete('1.0', tk.END)
-        if self.presidents_game.completed:
-            for i, president in enumerate(self.presidents_game.completed, 1):
-                name_only = president.split(' (')[0]
-                self.completed_text.insert(tk.END, f"{i}. {name_only}\n")
-        else:
-            self.completed_text.insert(tk.END, "Cap president completat encara.")
-        self.completed_text.configure(state='disabled')
-        self.completed_text.see(tk.END)
-
-    def export_presidents_record(self) -> None:
-        """Exporta el registre de presidents."""
-        if not self.presidents_game.completed:
-            messagebox.showwarning("Avís", "No hi ha presidents completats!")
-            return
-        
-        now = datetime.now()
-        guest_name = self.guest_name_var.get().strip() or "Convidat"
-        content = f"REGISTRE PRESIDENTS GENERALITAT - PROGRAMA #{self.timer.program_number}\n"
-        content += "=" * 60 + "\n"
-        content += f"Convidat: {guest_name}\n"
-        content += f"Data: {self.timer.get_catalan_date()}\n"
-        content += f"Hora: {now.strftime('%H:%M:%S')}\n\n"
-        content += f"Presidents encertats: {len(self.presidents_game.completed)} de {len(self.presidents_game.presidents)}\n"
-        content += "-" * 60 + "\n"
-        for i, president in enumerate(self.presidents_game.completed, 1):
-            content += f"{i:2d}. {president}\n"
-        content += "-" * 60 + "\n"
-        content += f"Percentatge d'encert: {(len(self.presidents_game.completed)/len(self.presidents_game.presidents)*100):.1f}%\n"
-        
-        export_window = tk.Toplevel(self.root)
-        export_window.title("Registre Presidents")
-        export_window.geometry("800x600")
-        export_window.transient(self.root)
-        export_window.grab_set()
-        
-        text_frame = ttk.Frame(export_window, padding="10")
-        text_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        
-        ttk.Label(text_frame, text="Registre de Presidents", font=('Arial', 12, 'bold')).grid(row=0, column=0, pady=(0, 10), sticky=tk.W)
-        
-        text_container = ttk.Frame(text_frame)
-        text_container.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        text_container.columnconfigure(0, weight=1)
-        text_container.rowconfigure(0, weight=1)
-        
-        text_widget = tk.Text(text_container, wrap=tk.NONE, font=('Courier New', 9))
-        text_widget.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        
-        v_scrollbar = ttk.Scrollbar(text_container, orient=tk.VERTICAL, command=text_widget.yview)
-        v_scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
-        text_widget.configure(yscrollcommand=v_scrollbar.set)
-        
-        text_widget.insert('1.0', content)
-        text_widget.configure(state='disabled')
-        
-        button_frame = ttk.Frame(text_frame)
-        button_frame.grid(row=2, column=0, pady=(15, 0))
-        
-        def copy_to_clipboard():
-            self.root.clipboard_clear()
-            self.root.clipboard_append(content)
-            messagebox.showinfo("OK", "Registre copiat al portapapers!")
-        
-        ttk.Button(button_frame, text="Copiar", command=copy_to_clipboard).pack(side=tk.LEFT, padx=10)
-        ttk.Button(button_frame, text="Tancar", command=export_window.destroy).pack(side=tk.LEFT, padx=10)
-        
-        export_window.columnconfigure(0, weight=1)
-        export_window.rowconfigure(0, weight=1)
-        text_frame.columnconfigure(0, weight=1)
-        text_frame.rowconfigure(1, weight=1)
 
 
 def main():
