@@ -697,7 +697,7 @@ class TimerApp:
 
         # Volume control (moved to top)
         volume_frame = ttk.Frame(audio_frame, padding="5")
-        volume_frame.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 5))
+        volume_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 5))
         volume_frame.columnconfigure(1, weight=1)
         ttk.Label(volume_frame, text="Volum:", font=('Arial', 10)).grid(row=0, column=0, padx=(0, 5), sticky=tk.W)
         self.volume_var = tk.DoubleVar(value=70)
