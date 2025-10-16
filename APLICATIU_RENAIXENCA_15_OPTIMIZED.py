@@ -713,7 +713,7 @@ class TimerApp:
 
         # Volume control (moved to top)
         volume_frame = ttk.Frame(audio_frame, padding="5")
-        volume_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 5))
+        volume_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 0)) # Reduced pady from (0, 5) to (0, 0)
         volume_frame.columnconfigure(1, weight=1)
         ttk.Label(volume_frame, text="Volum:", font=('Arial', 10)).grid(row=0, column=0, padx=(0, 5), sticky=tk.W)
         self.volume_var = tk.DoubleVar(value=70)
@@ -731,7 +731,7 @@ class TimerApp:
 
         # Buttons (bigger, icons only)
         buttons_frame = ttk.Frame(left_audio_controls_frame)
-        buttons_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.S), pady=(0, 0)) # Reduced pady from (0, 2) to (0, 0)
+        buttons_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.S), pady=(0, 0)) # No change, already (0, 0)
         buttons_frame.columnconfigure(0, weight=1)
         buttons_frame.columnconfigure(1, weight=1)
         buttons_frame.columnconfigure(2, weight=1)
@@ -752,12 +752,12 @@ class TimerApp:
         # Counter (much bigger)
         self.audio_time_var = tk.StringVar(value="00:00 / --:--")
         ttk.Label(left_audio_controls_frame, textvariable=self.audio_time_var, 
-                 font=('Courier New', 26, 'bold'), anchor='center').grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(5, 5)) # Reduced pady from (10, 30) to (5, 5)
+                 font=('Courier New', 30, 'bold'), anchor='center').grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(10, 10)) # Increased from 26 to 30, pady from (5, 5) to (10, 10)
 
         # Progress bar (full width of left part)
         self.audio_progress_var = tk.DoubleVar()
         self.audio_progress_bar = ttk.Progressbar(left_audio_controls_frame, variable=self.audio_progress_var, maximum=100)
-        self.audio_progress_bar.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=(0, 0)) # Reduced pady from (0, 5) to (0, 0)
+        self.audio_progress_bar.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=(0, 0)) # No change, already (0, 0)
         self.audio_progress_bar.bind("<Button-1>", self.on_progress_click)
         
         # Right part: Audio Files List
