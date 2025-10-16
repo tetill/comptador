@@ -1196,21 +1196,35 @@ class TimerApp:
             messagebox.showerror("Error", "Cap reproductor d'àudio disponible.")
             return
             
-        # Si no hi ha fitxer carregat, carrega el seleccionat
-        if not self.audio_player.current_file:
-            selection = self.audio_listbox.curselection()
-            if not selection:
-                messagebox.showwarning("Avís", "Selecciona un fitxer per reproduir.")
+        # Comprova si hi ha un fitxer seleccionat a la llista
+        selection = self.audio_listbox.curselection()
+        selected_file_path = None
+        if selection:
+            selected_file_path = self.audio_player.files[selection[0]]
+
+        # Si hi ha un fitxer seleccionat i és diferent del que s'està reproduint, o no hi ha cap fitxer carregat
+        if selected_file_path and (selected_file_path != self.audio_player.current_file or not self.audio_player.current_file):
+            # Stop current playback before loading a new file
+            self.audio_player.stop()
+            
+            if not self.audio_player.load_file(selected_file_path):
+                messagebox.showerror("Error", "No s'ha pogut carregar el fitxer seleccionat.")
                 return
-            file_path = self.audio_player.files[selection[0]]
-            if not self.audio_player.load_file(file_path):
-                messagebox.showerror("Error", "No s'ha pogut carregar el fitxer.")
-                return
-            file_name = os.path.basename(file_path)
+            file_name = os.path.basename(selected_file_path)
             if len(file_name) > 25:
                 file_name = file_name[:22] + "..."
             self.current_audio_var.set(file_name)
+            # Force play after loading new file
+            if self.audio_player.play():
+                self.play_pause_btn.configure(text="⏸️")
+            return # Exit after handling new file load and play
+
+        # Si no hi ha cap fitxer seleccionat i tampoc hi ha cap fitxer carregat
+        if not selected_file_path and not self.audio_player.current_file:
+            messagebox.showwarning("Avís", "Selecciona un fitxer per reproduir.")
+            return
         
+        # Si ja hi ha un fitxer carregat (i potser seleccionat, però és el mateix)
         status = self.audio_player.get_status()
         
         if status == "playing":
@@ -1242,6 +1256,9 @@ class TimerApp:
             
         file_path = self.audio_player.files[selection[0]]
         
+        # Stop current playback before loading a new file
+        self.audio_player.stop()
+
         if self.audio_player.load_file(file_path):
             if self.audio_player.play():
                 file_name = os.path.basename(file_path)
