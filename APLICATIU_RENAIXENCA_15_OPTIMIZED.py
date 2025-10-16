@@ -173,6 +173,7 @@ class AudioPlayer:
         self.vlc_instance = None
         self.vlc_player = None
         self.use_vlc: bool = VLC_AVAILABLE
+        self.media_ended_callback = None # Callback per quan el medi acaba
         
         self._initialize_audio_backend()
     
@@ -185,6 +186,7 @@ class AudioPlayer:
                 self.vlc_instance = vlc.Instance('--intf', 'dummy', '--no-video', '--quiet', '--no-osd', '--no-stats')
                 self.vlc_player = self.vlc_instance.media_player_new()
                 self.vlc_player.audio_set_volume(70)
+                self._setup_vlc_events() # Setup VLC event handling
                 print("VLC inicialitzat correctament")
             except Exception as e:
                 print(f"Error inicialitzant VLC: {e}")
@@ -244,6 +246,19 @@ class AudioPlayer:
         except Exception as e:
             print(f"Error carregant amb pygame: {e}")
             return False
+
+    def _setup_vlc_events(self) -> None:
+        """Configura els esdeveniments de VLC."""
+        if self.vlc_player:
+            event_manager = self.vlc_player.event_manager()
+            event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, self._handle_vlc_media_ended)
+
+    def _handle_vlc_media_ended(self, event) -> None:
+        """Gestiona l'esdeveniment de finalització de la reproducció de VLC."""
+        self.is_playing = False
+        self.is_paused = False
+        if self.media_ended_callback:
+            self.media_ended_callback()
 
     def play(self) -> bool:
         """Reprodueix l'àudio."""
@@ -421,6 +436,7 @@ class TimerApp:
         # Components principals
         self.timer = PrecisionTimer()
         self.audio_player = AudioPlayer()
+        self.audio_player.media_ended_callback = self._on_audio_playback_ended
         
         # Inicialització
         self.ask_program_number()
@@ -715,14 +731,14 @@ class TimerApp:
 
         # Buttons (bigger, icons only)
         buttons_frame = ttk.Frame(left_audio_controls_frame)
-        buttons_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.S), pady=(0, 10))
+        buttons_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.S), pady=(0, 0)) # Reduced pady from (0, 2) to (0, 0)
         buttons_frame.columnconfigure(0, weight=1)
         buttons_frame.columnconfigure(1, weight=1)
         buttons_frame.columnconfigure(2, weight=1)
 
         # Define a style for the larger buttons
         style = ttk.Style()
-        style.configure("Big.TButton", font=('Arial', 18, 'bold'))
+        style.configure("Big.TButton", font=('Arial', 10, 'bold')) # No change, already 10
 
         load_btn = ttk.Button(buttons_frame, text="📁", command=self.load_audio_files, style="Big.TButton")
         load_btn.grid(row=0, column=0, padx=5, pady=5, sticky=(tk.W, tk.E))
@@ -736,12 +752,12 @@ class TimerApp:
         # Counter (much bigger)
         self.audio_time_var = tk.StringVar(value="00:00 / --:--")
         ttk.Label(left_audio_controls_frame, textvariable=self.audio_time_var, 
-                 font=('Courier New', 48, 'bold'), anchor='center').grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(10, 20))
+                 font=('Courier New', 26, 'bold'), anchor='center').grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(5, 5)) # Reduced pady from (10, 30) to (5, 5)
 
         # Progress bar (full width of left part)
         self.audio_progress_var = tk.DoubleVar()
         self.audio_progress_bar = ttk.Progressbar(left_audio_controls_frame, variable=self.audio_progress_var, maximum=100)
-        self.audio_progress_bar.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=(0, 5))
+        self.audio_progress_bar.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=(0, 0)) # Reduced pady from (0, 5) to (0, 0)
         self.audio_progress_bar.bind("<Button-1>", self.on_progress_click)
         
         # Right part: Audio Files List
@@ -1191,48 +1207,46 @@ class TimerApp:
                 self.update_audio_list()
 
     def toggle_play_pause(self) -> None:
-        """Alterna entre play i pausa."""
+        """Alterna entre play i pausa, amb lògica millorada per selecció de fitxers."""
         if not PYGAME_AVAILABLE and not VLC_AVAILABLE:
             messagebox.showerror("Error", "Cap reproductor d'àudio disponible.")
             return
             
-        # Comprova si hi ha un fitxer seleccionat a la llista
         selection = self.audio_listbox.curselection()
         selected_file_path = None
         if selection:
             selected_file_path = self.audio_player.files[selection[0]]
 
-        # Si hi ha un fitxer seleccionat i és diferent del que s'està reproduint, o no hi ha cap fitxer carregat
-        if selected_file_path and (selected_file_path != self.audio_player.current_file or not self.audio_player.current_file):
-            # Stop current playback before loading a new file
-            self.audio_player.stop()
-            
-            if not self.audio_player.load_file(selected_file_path):
-                messagebox.showerror("Error", "No s'ha pogut carregar el fitxer seleccionat.")
-                return
-            file_name = os.path.basename(selected_file_path)
-            if len(file_name) > 25:
-                file_name = file_name[:22] + "..."
-            self.current_audio_var.set(file_name)
-            # Force play after loading new file
-            if self.audio_player.play():
-                self.play_pause_btn.configure(text="⏸️")
-            return # Exit after handling new file load and play
-
-        # Si no hi ha cap fitxer seleccionat i tampoc hi ha cap fitxer carregat
-        if not selected_file_path and not self.audio_player.current_file:
-            messagebox.showwarning("Avís", "Selecciona un fitxer per reproduir.")
-            return
+        current_button_text = self.play_pause_btn.cget("text")
         
-        # Si ja hi ha un fitxer carregat (i potser seleccionat, però és el mateix)
-        status = self.audio_player.get_status()
-        
-        if status == "playing":
+        if current_button_text == "▶️": # Button is currently showing PLAY, so user wants to PLAY
+            if selected_file_path: # A file is selected
+                if selected_file_path != self.audio_player.current_file:
+                    # New file selected, load and play it
+                    self.audio_player.stop() # Stop current if any
+                    if not self.audio_player.load_file(selected_file_path):
+                        messagebox.showerror("Error", "No s'ha pogut carregar el fitxer seleccionat.")
+                        return
+                    file_name = os.path.basename(selected_file_path)
+                    if len(file_name) > 25:
+                        file_name = file_name[:22] + "..."
+                    self.current_audio_var.set(file_name)
+                    if self.audio_player.play():
+                        self.play_pause_btn.configure(text="⏸️")
+                else: # Same file selected or no new selection, but button is PLAY (so it's paused or stopped)
+                    if self.audio_player.play(): # Resume or play current
+                        self.play_pause_btn.configure(text="⏸️")
+            elif self.audio_player.current_file: # No new selection, but a file is loaded and paused/stopped
+                if self.audio_player.play():
+                    self.play_pause_btn.configure(text="⏸️")
+            else: # No selection, no current file
+                messagebox.showwarning("Avís", "Selecciona un fitxer per reproduir.")
+                
+        elif current_button_text == "⏸️": # Button is currently showing PAUSE, so user wants to PAUSE
             if self.audio_player.pause():
                 self.play_pause_btn.configure(text="▶️")
-        else:
-            if self.audio_player.play():
-                self.play_pause_btn.configure(text="⏸️")
+            else: # If for some reason it couldn't pause (e.g., not playing), just ensure button is play
+                self.play_pause_btn.configure(text="▶️")
 
     def stop_audio(self) -> None:
         """Para la reproducció d'àudio."""
@@ -1242,6 +1256,10 @@ class TimerApp:
             self.audio_time_var.set("00:00 / --:--")
             self.audio_progress_var.set(0)
             self.play_pause_btn.configure(text="▶️")
+
+    def _on_audio_playback_ended(self) -> None:
+        """Callback quan la reproducció d'àudio ha finalitzat."""
+        self.stop_audio() # This will reset the UI and button state
 
     def change_volume(self, value) -> None:
         """Canvia el volum."""
@@ -1333,6 +1351,11 @@ class TimerApp:
         """Actualitza display amb Pygame."""
         status = self.audio_player.get_status()
         current_time = self.audio_player.get_current_time()
+        
+        if self.audio_player.is_playing and not pygame.mixer.music.get_busy():
+            # Pygame has finished playing, but our internal state might not be updated yet
+            self._on_audio_playback_ended()
+            return # Exit early as the state has been reset
         
         if status == "playing":
             minutes = current_time // 60
