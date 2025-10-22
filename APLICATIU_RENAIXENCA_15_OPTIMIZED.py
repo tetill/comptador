@@ -255,11 +255,14 @@ class AudioPlayer:
 
     def _handle_vlc_media_ended(self, event) -> None:
         """Gestiona l'esdeveniment de finalització de la reproducció de VLC."""
+        # Aquesta funció és cridada per un thread de VLC, per tant, les actualitzacions de la UI
+        # han de ser programades per executar-se al thread principal de Tkinter.
+        # S'afegeix una comprovació per a 'self.root' per assegurar que l'aplicació encara existeix.
+        if self.media_ended_callback and hasattr(self, 'root') and self.root:
+            self.root.after_idle(self.media_ended_callback)
+        # Aquestes variables d'estat es poden actualitzar aquí ja que no són widgets de Tkinter directament.
         self.is_playing = False
         self.is_paused = False
-        if self.media_ended_callback:
-            self.media_ended_callback()
-
     def play(self) -> bool:
         """Reprodueix l'àudio."""
         if not self.current_file:
